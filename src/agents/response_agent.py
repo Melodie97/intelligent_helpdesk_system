@@ -11,7 +11,7 @@ class ResponseAgent:
         
         if llm_provider == 'gemini':
             self.llm = ChatGoogleGenerativeAI(
-                model="gemini-pro",
+                model="gemini-2.5-pro",
                 google_api_key=os.getenv('GEMINI_API_KEY'),
                 temperature=0.7
             )

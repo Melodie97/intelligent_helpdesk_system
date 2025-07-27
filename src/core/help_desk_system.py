@@ -14,9 +14,10 @@ class HelpDeskSystem:
         
         # Convert multi-agent result to original response format
         return HelpDeskResponse(
-            classification=result['classification'],
+            request=request.request,
+            user_id=request.user_id,
+            classification=result['classification'].category,
             response=result['response'],
-            knowledge_items=result['knowledge_items'],
             escalate=result['escalate'],
             escalation_reason=result['escalation_reason']
         )
