@@ -1,5 +1,5 @@
 from langchain.vectorstores import FAISS
-from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain.schema import Document
 import json
 import os
@@ -34,9 +34,20 @@ class KnowledgeAgent:
             troubleshooting = json.load(f)
             for key, item in troubleshooting['troubleshooting_steps'].items():
                 content = f"Steps: {' '.join(item['steps'])}"
+                # Map troubleshooting keys to categories
+                category_mapping = {
+                    'password_reset': 'password_reset',
+                    'slow_computer': 'hardware_failure',
+                    'wifi_connection': 'network_connectivity', 
+                    'email_not_syncing': 'email_configuration',
+                    'software_installation_failed': 'software_installation'
+                }
                 doc = Document(
                     page_content=content,
-                    metadata={'source': f'troubleshooting_database.json#{key}'}
+                    metadata={
+                        'source': f'troubleshooting_database.json#{key}',
+                        'category': category_mapping.get(key, 'general')
+                    }
                 )
                 documents.append(doc)
         
@@ -51,7 +62,10 @@ class KnowledgeAgent:
                     content += f"\nCommon Issues: {issues}"
                 doc = Document(
                     page_content=content,
-                    metadata={'source': f'installation_guides.json#{software}'}
+                    metadata={
+                        'source': f'installation_guides.json#{software}',
+                        'category': 'software_installation'
+                    }
                 )
                 documents.append(doc)
         
@@ -65,7 +79,10 @@ class KnowledgeAgent:
                 body = '\n'.join(section.split('\n')[1:])
                 doc = Document(
                     page_content=body.strip(),
-                    metadata={'source': f'company_it_policies.md#{title}'}
+                    metadata={
+                        'source': f'company_it_policies.md#{title}',
+                        'category': 'policy_question'
+                    }
                 )
                 documents.append(doc)
         
@@ -73,15 +90,31 @@ class KnowledgeAgent:
     
     def retrieve_knowledge(self, state: HelpDeskState) -> HelpDeskState:
         request = state["request"]
+        classification = state["classification"]
         
         # Get similar documents
-        docs = self.vectorstore.similarity_search_with_score(request, k=6)
+        docs = self.vectorstore.similarity_search_with_score(request, k=12)
         
-        # Sort by score and take top 3
-        docs.sort(key=lambda x: x[1])
+        # Prioritize documents matching the classified category
+        category_docs = []
+        other_docs = []
+        
+        for doc, score in docs:
+            doc_category = doc.metadata.get('category')
+            if doc_category == classification.category.value:
+                category_docs.append((doc, score))
+            else:
+                other_docs.append((doc, score))
+        
+        # Sort both lists by score
+        category_docs.sort(key=lambda x: x[1])
+        other_docs.sort(key=lambda x: x[1])
+        
+        # Take top 2 from matching category + top 1 from others
+        selected_docs = category_docs[:2] + other_docs[:1]
         
         knowledge_items = []
-        for doc, score in docs[:3]:
+        for doc, score in selected_docs:
             knowledge_items.append(KnowledgeItem(
                 content=doc.page_content,
                 source=doc.metadata['source'],
