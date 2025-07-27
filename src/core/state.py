@@ -10,6 +10,7 @@ class RequestCategory(str, Enum):
     EMAIL_CONFIGURATION = "email_configuration"
     SECURITY_INCIDENT = "security_incident"
     POLICY_QUESTION = "policy_question"
+    GENERAL = "general"
 
 class KnowledgeItem(BaseModel):
     content: str

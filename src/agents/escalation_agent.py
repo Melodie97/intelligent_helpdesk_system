@@ -40,7 +40,7 @@ class EscalationAgent:
         classification = state["classification"]
         
         # Always escalate certain categories
-        if classification.category in ['security_incident', 'hardware_failure']:
+        if classification.category in ['security_incident', 'hardware_failure', 'general']:
             state["escalate"] = True
             state["escalation_reason"] = f"{classification.category.value} requires automatic escalation"
             state["next_action"] = "generate_response"

@@ -36,7 +36,12 @@ class ClassifierAgent:
         best_match_idx = np.argmax(similarities)
         confidence = similarities[best_match_idx]
         
-        category = RequestCategory(self.category_names[best_match_idx])
+        # Use general category for low confidence classifications
+        if confidence < 0.3:
+            category = RequestCategory('general')
+        else:
+            category = RequestCategory(self.category_names[best_match_idx])
+        
         classification = ClassificationResult(category=category, confidence=float(confidence))
         
         state["classification"] = classification

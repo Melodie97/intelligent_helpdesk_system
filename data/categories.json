@@ -34,6 +34,11 @@
       "description": "Questions about company IT policies and procedures",
       "typical_resolution_time": "5-15 minutes",
       "escalation_triggers": ["Policy clarification needed", "Exception requests"]
+    },
+    "general": {
+      "description": "General requests that cannot be properly classified or have unclear intent",
+      "typical_resolution_time": "Requires human review",
+      "escalation_triggers": ["All general requests require escalation"]
     }
   }
 }
