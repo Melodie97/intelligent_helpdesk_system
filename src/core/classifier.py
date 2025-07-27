@@ -1,4 +1,5 @@
-from sentence_transformers import SentenceTransformer
+from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.schema import Document
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from .models import RequestCategory, ClassificationResult
@@ -8,7 +9,7 @@ import json
 class RequestClassifier:
     def __init__(self):
         self.config = Config()
-        self.model = SentenceTransformer('all-MiniLM-L6-v2')
+        self.embeddings = HuggingFaceEmbeddings(model_name='all-MiniLM-L6-v2')
         self.categories = self._load_categories()
         self.category_embeddings = None
         self._train()
@@ -26,11 +27,11 @@ class RequestClassifier:
             category_texts.append(text)
             self.category_names.append(cat_name)
         
-        self.category_embeddings = self.model.encode(category_texts)
+        self.category_embeddings = self.embeddings.embed_documents(category_texts)
     
     def classify(self, request: str) -> ClassificationResult:
-        request_embedding = self.model.encode([request])
-        similarities = cosine_similarity(request_embedding, self.category_embeddings)[0]
+        request_embedding = self.embeddings.embed_query(request)
+        similarities = cosine_similarity([request_embedding], self.category_embeddings)[0]
         
         best_match_idx = np.argmax(similarities)
         confidence = similarities[best_match_idx]
