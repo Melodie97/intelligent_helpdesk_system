@@ -40,6 +40,35 @@ class KnowledgeAgent:
                 )
                 documents.append(doc)
         
+        # Load installation guides
+        install_file = os.path.join(data_dir, 'installation_guides.json')
+        with open(install_file, 'r') as f:
+            guides = json.load(f)
+            for software, guide in guides['software_guides'].items():
+                content = f"Title: {guide['title']}\nSteps: {' '.join(guide['steps'])}"
+                if 'common_issues' in guide:
+                    issues = ' '.join([f"{issue['issue']}: {issue['solution']}" for issue in guide['common_issues']])
+                    content += f"\nCommon Issues: {issues}"
+                doc = Document(
+                    page_content=content,
+                    metadata={'source': f'installation_guides.json#{software}'}
+                )
+                documents.append(doc)
+        
+        # Load company IT policies
+        policies_file = os.path.join(data_dir, 'company_it_policies.md')
+        with open(policies_file, 'r') as f:
+            content = f.read()
+            sections = content.split('## ')
+            for section in sections[1:]:
+                title = section.split('\n')[0]
+                body = '\n'.join(section.split('\n')[1:])
+                doc = Document(
+                    page_content=body.strip(),
+                    metadata={'source': f'company_it_policies.md#{title}'}
+                )
+                documents.append(doc)
+        
         return FAISS.from_documents(documents, self.embeddings)
     
     def retrieve_knowledge(self, state: HelpDeskState) -> HelpDeskState:
