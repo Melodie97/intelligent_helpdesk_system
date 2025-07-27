@@ -38,6 +38,7 @@ class HelpDeskState(TypedDict):
     request: str
     user_id: Optional[str]
     classification: Optional[ClassificationResult]
+    knowledge_items: List[KnowledgeItem]
     escalate: bool
     escalation_reason: Optional[str]
     response: str

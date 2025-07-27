@@ -47,7 +47,7 @@ RESPONSE:"""
     def generate_response(self, state: HelpDeskState) -> HelpDeskState:
         if state["escalate"]:
             escalation_reason = state["escalation_reason"] or ""
-            state["response"] = f"This request has been escalated to our support team. {escalation_reason} You will receive a response within the next business hour."
+            state["response"] = f"This request has been escalated to the right support team. You will receive a response within the next business hour."
         else:
             # Create context from knowledge items
             context = "\n\n".join([
