@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from src.core.help_desk_system import HelpDeskSystem
 from src.core.state import HelpDeskRequest, HelpDeskResponse
 from config.settings import Config
+from fastapi.middleware.cors import CORSMiddleware
 
 def create_app() -> FastAPI:
     app = FastAPI(title="Intelligent Help Desk System", version="1.0.0")
@@ -31,5 +32,13 @@ def create_app() -> FastAPI:
     async def get_config():
         """Get current system configuration"""
         return config.get_provider_info()
+    
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["https://helpdesk-ui-three.vercel.app/"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
     
     return app

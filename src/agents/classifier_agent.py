@@ -1,4 +1,6 @@
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_community.embeddings import HuggingFaceEmbeddings
+import os
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 import json
@@ -7,7 +9,15 @@ from ..core.state import HelpDeskState, ClassificationResult, RequestCategory
 
 class ClassifierAgent:
     def __init__(self):
-        self.embeddings = HuggingFaceEmbeddings(model_name='all-MiniLM-L6-v2')
+        # Use Google embeddings if Gemini API key is available, otherwise HuggingFace
+        if os.getenv('GEMINI_API_KEY'):
+            self.embeddings = GoogleGenerativeAIEmbeddings(
+                model="models/embedding-001",
+                google_api_key=os.getenv('GEMINI_API_KEY')
+            )
+        else:
+            self.embeddings = HuggingFaceEmbeddings(model_name='all-MiniLM-L6-v2')
+        
         self.categories = self._load_categories()
         self.category_embeddings = None
         self._train()
