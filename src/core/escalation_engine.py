@@ -20,13 +20,20 @@ class EscalationEngine:
     def _build_escalation_vectorstore(self):
         escalation_docs = [
             # Category-specific escalation triggers from categories.json
-            Document(page_content="multiple failed resets account security concerns", metadata={'type': 'password_reset', 'category': 'password_reset'}),
-            Document(page_content="unapproved software requests system compatibility issues", metadata={'type': 'software_installation', 'category': 'software_installation'}),
-            Document(page_content="all hardware failures require escalation", metadata={'type': 'hardware_failure', 'category': 'hardware_failure'}),
-            Document(page_content="network infrastructure issues multiple users affected", metadata={'type': 'network_connectivity', 'category': 'network_connectivity'}),
-            Document(page_content="server configuration changes distribution list modifications", metadata={'type': 'email_configuration', 'category': 'email_configuration'}),
-            Document(page_content="all security incidents require immediate escalation", metadata={'type': 'security_incident', 'category': 'security_incident'}),
-            Document(page_content="policy clarification needed exception requests", metadata={'type': 'policy_question', 'category': 'policy_question'})
+            Document(page_content="multiple failed resets account security concerns", metadata={'type': 'password_reset', 'category': 'password_reset', 'contact': 'it-support@techcorp.com'}),
+            Document(page_content="unapproved software requests system compatibility issues", metadata={'type': 'software_installation', 'category': 'software_installation', 'contact': 'it-support@techcorp.com'}),
+            Document(page_content="all hardware failures require escalation", metadata={'type': 'hardware_failure', 'category': 'hardware_failure', 'contact': 'hardware-support@techcorp.com'}),
+            Document(page_content="network infrastructure issues multiple users affected", metadata={'type': 'network_connectivity', 'category': 'network_connectivity', 'contact': 'network-support@techcorp.com'}),
+            Document(page_content="server configuration changes distribution list modifications", metadata={'type': 'email_configuration', 'category': 'email_configuration', 'contact': 'email-support@techcorp.com'}),
+            Document(page_content="all security incidents require immediate escalation", metadata={'type': 'security_incident', 'category': 'security_incident', 'contact': 'security@techcorp.com'}),
+            Document(page_content="policy clarification needed exception requests", metadata={'type': 'policy_question', 'category': 'policy_question', 'contact': 'it-support@techcorp.com'}),
+            
+            # Troubleshooting database escalation triggers
+            Document(page_content="multiple failed reset attempts account lockout", metadata={'type': 'password_reset', 'category': 'password_reset', 'contact': 'security@techcorp.com'}),
+            Document(page_content="performance issues persist after basic troubleshooting", metadata={'type': 'hardware_failure', 'category': 'hardware_failure', 'contact': 'hardware-support@techcorp.com'}),
+            Document(page_content="unable to connect with any network or ethernet", metadata={'type': 'network_connectivity', 'category': 'network_connectivity', 'contact': 'network-support@techcorp.com'}),
+            Document(page_content="email account configuration errors server connectivity issues", metadata={'type': 'email_configuration', 'category': 'email_configuration', 'contact': 'email-support@techcorp.com'}),
+            Document(page_content="installation fails system compatibility requires admin privileges", metadata={'type': 'software_installation', 'category': 'software_installation', 'contact': 'software-support@techcorp.com'})
         ]
         return FAISS.from_documents(escalation_docs, self.embeddings)
     
@@ -57,16 +64,19 @@ class EscalationEngine:
                 
                 # Only escalate if the trigger matches the classified category
                 if doc_category == classification.category.value:
+                    contact = doc.metadata.get('contact', 'it-support@techcorp.com')
                     if escalation_type == 'password_reset':
-                        return True, "Multiple failed resets or account security concerns detected"
+                        return True, f"Password reset escalation detected - Contact: {contact}"
                     elif escalation_type == 'software_installation':
-                        return True, "Unapproved software or system compatibility issues detected"
+                        return True, f"Software installation escalation detected - Contact: {contact}"
                     elif escalation_type == 'network_connectivity':
-                        return True, "Network infrastructure issues detected"
+                        return True, f"Network connectivity escalation detected - Contact: {contact}"
                     elif escalation_type == 'email_configuration':
-                        return True, "Server configuration or distribution list changes needed"
+                        return True, f"Email configuration escalation detected - Contact: {contact}"
                     elif escalation_type == 'policy_question':
-                        return True, "Policy clarification or exception request detected"
+                        return True, f"Policy question escalation detected - Contact: {contact}"
+                    elif escalation_type == 'hardware_failure':
+                        return True, f"Hardware/performance escalation detected - Contact: {contact}"
         
         # Low confidence classification
         if classification.confidence < 0.3:
