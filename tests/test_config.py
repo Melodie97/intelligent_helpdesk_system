@@ -8,9 +8,8 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from dotenv import load_dotenv
 from config.settings import Config
-from src.core.classifier import RequestClassifier
-from src.core.knowledge_retriever import KnowledgeRetriever
-from src.core.escalation_engine import EscalationEngine
+from src.core.help_desk_system import HelpDeskSystem
+from src.core.state import HelpDeskRequest
 
 def test_config():
     """Test system configuration"""
@@ -29,23 +28,18 @@ def test_config():
     print("Testing core components...")
     
     try:
-        # Test classifier
-        classifier = RequestClassifier()
-        test_request = "I forgot my password"
-        classification = classifier.classify(test_request)
-        print(f"✅ Classifier: {classification.category} (confidence: {classification.confidence:.2f})")
+        # Test multi-agent system
+        help_desk = HelpDeskSystem()
+        test_request = HelpDeskRequest(request="I forgot my password", user_id="test_user")
         
-        # Test knowledge retriever
-        retriever = KnowledgeRetriever()
-        knowledge = retriever.retrieve(test_request, classification.category, top_k=2)
-        print(f"✅ Knowledge Retriever: Found {len(knowledge)} relevant items")
+        response = help_desk.process_request(test_request)
         
-        # Test escalation engine
-        escalation = EscalationEngine()
-        should_escalate, reason = escalation.should_escalate(test_request, classification)
-        print(f"✅ Escalation Engine: Escalate={should_escalate}")
+        print(f"✅ Classification: {response.classification.category} (confidence: {response.classification.confidence:.2f})")
+        print(f"✅ Knowledge Items: Found {len(response.knowledge_items)} relevant items")
+        print(f"✅ Escalation: {response.escalate}")
+        print(f"✅ Response Generated: {len(response.response)} characters")
         
-        print("\n🎉 Core system components working correctly!")
+        print("\n🎉 Multi-agent system working correctly!")
         
         if not config.validate():
             print("\n⚠️  Note: LLM provider not configured. Run 'python scripts/setup_llm.py' to configure.")

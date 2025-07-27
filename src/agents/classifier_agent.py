@@ -1,12 +1,9 @@
-from langchain.agents import AgentExecutor, create_openai_functions_agent
-from langchain.prompts import ChatPromptTemplate
-from langchain_openai import ChatOpenAI
 from langchain.embeddings import HuggingFaceEmbeddings
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 import json
 import os
-from ..models.state import HelpDeskState, ClassificationResult, RequestCategory
+from ..core.state import HelpDeskState, ClassificationResult, RequestCategory
 
 class ClassifierAgent:
     def __init__(self):

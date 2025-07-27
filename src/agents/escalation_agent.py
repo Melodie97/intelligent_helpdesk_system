@@ -3,7 +3,7 @@ from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.schema import Document
 import json
 import os
-from ..models.state import HelpDeskState
+from ..core.state import HelpDeskState
 
 class EscalationAgent:
     def __init__(self):

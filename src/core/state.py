@@ -20,6 +20,19 @@ class ClassificationResult(BaseModel):
     category: RequestCategory
     confidence: float
 
+# API Models
+class HelpDeskRequest(BaseModel):
+    request: str
+    user_id: Optional[str] = None
+
+class HelpDeskResponse(BaseModel):
+    classification: ClassificationResult
+    response: str
+    knowledge_items: List[KnowledgeItem]
+    escalate: bool
+    escalation_reason: Optional[str] = None
+
+# LangGraph State
 class HelpDeskState(TypedDict):
     request: str
     user_id: Optional[str]

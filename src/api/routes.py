@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from src.core.help_desk_system import HelpDeskSystem
-from src.core.models import HelpDeskRequest, HelpDeskResponse
+from src.core.state import HelpDeskRequest, HelpDeskResponse
 from config.settings import Config
 
 def create_app() -> FastAPI:

@@ -1,5 +1,5 @@
 from langgraph.graph import StateGraph, END
-from ..models.state import HelpDeskState
+from ..core.state import HelpDeskState
 from ..agents.classifier_agent import ClassifierAgent
 from ..agents.knowledge_agent import KnowledgeAgent
 from ..agents.escalation_agent import EscalationAgent

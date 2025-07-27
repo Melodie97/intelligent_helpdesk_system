@@ -1,9 +1,9 @@
-from workflows.helpdesk_workflow import HelpDeskWorkflow
+from src.workflows.helpdesk_workflow import HelpDeskWorkflow
 import os
 from dotenv import load_dotenv
 
 # Load environment variables
-load_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))
+load_dotenv()
 
 def main():
     # Initialize the multi-agent workflow

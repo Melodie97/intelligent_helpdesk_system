@@ -3,7 +3,7 @@ from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.schema import Document
 import json
 import os
-from ..models.state import HelpDeskState, KnowledgeItem
+from ..core.state import HelpDeskState, KnowledgeItem
 
 class KnowledgeAgent:
     def __init__(self):
@@ -44,21 +44,15 @@ class KnowledgeAgent:
     
     def retrieve_knowledge(self, state: HelpDeskState) -> HelpDeskState:
         request = state["request"]
-        classification = state["classification"]
         
         # Get similar documents
         docs = self.vectorstore.similarity_search_with_score(request, k=6)
         
-        # Prioritize category-matching documents
-        scored_docs = []
-        for doc, score in docs:
-            scored_docs.append((doc, score))
-        
         # Sort by score and take top 3
-        scored_docs.sort(key=lambda x: x[1])
+        docs.sort(key=lambda x: x[1])
         
         knowledge_items = []
-        for doc, score in scored_docs[:3]:
+        for doc, score in docs[:3]:
             knowledge_items.append(KnowledgeItem(
                 content=doc.page_content,
                 source=doc.metadata['source'],
