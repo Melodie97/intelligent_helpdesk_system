@@ -14,4 +14,11 @@ if __name__ == "__main__":
     print("API documentation at: http://localhost:8000/docs")
     
     app = create_app()
-    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
+    
+    uvicorn.run(
+        "src.api.routes:create_app",
+        host="0.0.0.0",
+        port=8000,
+        reload=True,
+        factory=True
+    )
