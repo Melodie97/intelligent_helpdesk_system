@@ -58,7 +58,7 @@ class EscalationAgent:
         # Check vector similarity for escalation triggers
         similar_docs = self.escalation_vectorstore.similarity_search_with_score(request, k=3)
         for doc, score in similar_docs:
-            if score < 0.8:
+            if score < 0.4:
                 doc_category = doc.metadata.get('category')
                 if doc_category == classification.category.value:
                     escalation_type = doc.metadata['type']
